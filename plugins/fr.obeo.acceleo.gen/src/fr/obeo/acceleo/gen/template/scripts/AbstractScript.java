@@ -25,6 +25,7 @@ import java.util.Stack;
 import java.util.TreeSet;
 
 import fr.obeo.acceleo.ecore.factories.FactoryException;
+import fr.obeo.acceleo.gen.AcceleoEcoreGenPlugin;
 import fr.obeo.acceleo.gen.template.TemplateConstants;
 import fr.obeo.acceleo.gen.template.eval.ENode;
 import fr.obeo.acceleo.gen.template.eval.ENodeCastException;
@@ -274,6 +275,8 @@ public abstract class AbstractScript implements IScript {
     }
 
     private SystemServicesFactory systemServicesFactory = null;
+    
+    protected JavaIntegration javaIntegration = AcceleoEcoreGenPlugin.getDefault().getJavaIntegration();
 
     /**
      * Creates the factory that produces the system services for this script.
@@ -281,7 +284,7 @@ public abstract class AbstractScript implements IScript {
      * @return the new factory
      */
     protected SystemServicesFactory createSystemServicesFactory() {
-        return new SystemServicesFactory();
+        return new SystemServicesFactory(javaIntegration);
     }
 
     /* (non-Javadoc) */

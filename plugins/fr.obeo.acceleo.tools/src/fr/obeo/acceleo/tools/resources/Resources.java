@@ -34,7 +34,6 @@ import java.util.jar.Manifest;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
@@ -46,9 +45,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.JavaModelException;
 import org.osgi.framework.Constants;
 
 import fr.obeo.acceleo.tools.AcceleoToolsPlugin;
@@ -343,31 +339,7 @@ public class Resources {
         return buffer;
     }
 
-    /**
-     * Gets the default output of the project.
-     * 
-     * @param project
-     *            is the project
-     * @return the default output of the project, or null if it doesn't exist
-     */
-    public static IFolder getOutputFolder(IProject project) {
-        final IJavaProject projet = JavaCore.create(project);
-        try {
-            IPath output = projet.getOutputLocation();
-            if (output != null && output.segmentCount() > 1) {
-                IFolder folder = project.getWorkspace().getRoot().getFolder(output);
-                if (folder.exists()) {
-                    return folder;
-                } else {
-                    return null;
-                }
-            } else {
-                return null;
-            }
-        } catch (JavaModelException e) {
-            return null;
-        }
-    }
+    
 
     /**
      * Creates and load a persistent EMF document for a resource in the

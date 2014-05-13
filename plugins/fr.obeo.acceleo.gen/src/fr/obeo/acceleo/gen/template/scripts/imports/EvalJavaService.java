@@ -27,9 +27,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.ecore.EObject;
-import org.osgi.framework.Bundle;
 
 import fr.obeo.acceleo.ecore.factories.FactoryException;
 import fr.obeo.acceleo.gen.AcceleoEcoreGenPlugin;
@@ -51,7 +49,6 @@ import fr.obeo.acceleo.gen.template.scripts.imports.services.ENodeServices;
 import fr.obeo.acceleo.gen.template.scripts.imports.services.EObjectServices;
 import fr.obeo.acceleo.gen.template.scripts.imports.services.RequestServices;
 import fr.obeo.acceleo.tools.classloaders.AcceleoClassLoader;
-import fr.obeo.acceleo.tools.classloaders.AcceleoGenClassLoader;
 import fr.obeo.acceleo.tools.plugins.AcceleoModuleProvider;
 
 /**
@@ -139,7 +136,7 @@ public class EvalJavaService implements IEvalSettings {
      * @param hasScriptContext
      *            indicates if the services have a script context
      */
-    public EvalJavaService(Object instance, boolean hasScriptContext) {
+     protected EvalJavaService(Object instance, boolean hasScriptContext) {
         this.instance = instance;
         this.hasScriptContext = hasScriptContext;
         initializeName2service();
@@ -154,7 +151,7 @@ public class EvalJavaService implements IEvalSettings {
      *            is the class to be created
      * @throws JavaServiceNotFoundException
      */
-    public EvalJavaService(File script, String className) throws JavaServiceNotFoundException {
+     protected EvalJavaService(File script, String className) throws JavaServiceNotFoundException {
         // Remark : script "fr.package.template" -> class "fr.package.Template"
         String shortName = className;
         String path = ""; //$NON-NLS-1$
@@ -178,7 +175,7 @@ public class EvalJavaService implements IEvalSettings {
      *            is the script that imports the service
      * @throws JavaServiceNotFoundException
      */
-    public EvalJavaService(File script) throws JavaServiceNotFoundException {
+    protected EvalJavaService(File script) throws JavaServiceNotFoundException {
         // Remark : script "/fr/package/template.mt" -> class
         // "fr.package.Template"
         String name = new Path(script.getName()).removeFileExtension().lastSegment();
@@ -299,18 +296,7 @@ public class EvalJavaService implements IEvalSettings {
      *            is the script
      * @return the default class loader
      */
-    private ClassLoader createClassLoader(File script) {
-        final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(script.getAbsolutePath()));
-        if (file != null && file.isAccessible()) {
-            return new AcceleoGenClassLoader(file.getProject(), EvalJavaService.class.getClassLoader());
-        }
-        final String pluginId = AcceleoModuleProvider.getDefault().getPluginId(script);
-        if (pluginId != null) {
-            final Bundle bundle = Platform.getBundle(pluginId);
-            if (bundle != null) {
-                return new AcceleoGenClassLoader(bundle, EvalJavaService.class.getClassLoader());
-            }
-        }
+    protected ClassLoader createClassLoader(File script) {       
         return EvalJavaService.class.getClassLoader();
     }
 

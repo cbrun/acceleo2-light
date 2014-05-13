@@ -20,7 +20,9 @@ import org.osgi.framework.BundleContext;
 
 import fr.obeo.acceleo.gen.template.TemplateConstants;
 import fr.obeo.acceleo.gen.template.scripts.ISpecificScriptContext;
+import fr.obeo.acceleo.gen.template.scripts.JavaIntegration;
 import fr.obeo.acceleo.gen.template.scripts.SpecificScript;
+import fr.obeo.acceleo.gen.template.scripts.imports.StdJavaIntergation;
 import fr.obeo.acceleo.tools.resources.AcceleoPlugin;
 import fr.obeo.acceleo.tools.resources.FileContentMap;
 
@@ -167,6 +169,10 @@ public class AcceleoEcoreGenPlugin extends AcceleoPlugin {
             globalScriptContext = new SpecificScriptContext(2);
         }
         return globalScriptContext;
+    }
+
+    public JavaIntegration getJavaIntegration() {
+        return new StdJavaIntergation();
     }
 
 }

@@ -10,7 +10,7 @@
  *    Obeo - initial API and implementation
  */
 
-package fr.obeo.acceleo.tools.classloaders;
+package fr.obeo.acceleo.gen.ide;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,7 +29,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.osgi.framework.Bundle;
 
-import fr.obeo.acceleo.tools.resources.Resources;
+import fr.obeo.acceleo.tools.classloaders.AcceleoClassLoader;
 
 /**
  * This is a classloader for a generator project.
@@ -74,7 +74,7 @@ public class AcceleoGenClassLoader extends AcceleoClassLoader {
     }
 
     private static void computeURLs(IProject project, List URLs) {
-        IFolder binFolder = Resources.getOutputFolder(project);
+        IFolder binFolder = WorkspaceResources.getOutputFolder(project);
         if (binFolder != null) {
             String location = binFolder.getLocation().toString();
             if (location.startsWith("/")) { //$NON-NLS-1$

@@ -27,7 +27,6 @@ import java.util.TreeMap;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -38,10 +37,6 @@ import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcorePackage;
-import org.eclipse.jdt.core.IClasspathEntry;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.JavaModelException;
 import org.osgi.framework.Bundle;
 
 import fr.obeo.acceleo.ecore.factories.FactoryException;
@@ -59,7 +54,6 @@ import fr.obeo.acceleo.gen.template.eval.LaunchManager;
 import fr.obeo.acceleo.gen.template.expressions.TemplateCallExpression;
 import fr.obeo.acceleo.gen.template.expressions.TemplateCallSetExpression;
 import fr.obeo.acceleo.gen.template.expressions.TemplateExpression;
-import fr.obeo.acceleo.gen.template.scripts.imports.EvalJavaService;
 import fr.obeo.acceleo.gen.template.scripts.imports.EvalModel;
 import fr.obeo.acceleo.gen.template.scripts.imports.JavaServiceNotFoundException;
 import fr.obeo.acceleo.gen.template.statements.TemplateFeatureStatement;
@@ -150,6 +144,8 @@ public class SpecificScript extends AbstractScript {
      * The context of the script.
      */
     protected ISpecificScriptContext scriptContext = null;
+
+    
 
     /**
      * Constructor.
@@ -731,7 +727,7 @@ public class SpecificScript extends AbstractScript {
                     // Get imports
                     if (file != null) {
                         try {
-                            addImport(new EvalJavaService(file));
+                            addImport(javaIntegration.newEvalJavaService(file));
                         } catch (final JavaServiceNotFoundException e) {
                         }
                     }
@@ -1074,7 +1070,7 @@ public class SpecificScript extends AbstractScript {
      *             if the class designed by value doesn't exists
      */
     protected void addImportForJavaService(final File file, final String value) throws JavaServiceNotFoundException {
-        addImport(new EvalJavaService(file, value));
+        addImport(javaIntegration.createEvalJavaService(file, value));
     }
 
     protected File resolveScriptFile(File script, String importValue, String extension) {
@@ -1083,7 +1079,7 @@ public class SpecificScript extends AbstractScript {
         final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(script.getAbsolutePath()));
         if (file != null && file.isAccessible()) {
             final IPath importPath = new Path(importValue.replaceAll("\\.", "/")).addFileExtension(extension); //$NON-NLS-1$ //$NON-NLS-2$
-            res = getScriptFileInProject(file.getProject(), importPath);
+            res = javaIntegration.getScriptFileInProject(file.getProject(), importPath);
         } else {
             final String pluginId = AcceleoModuleProvider.getDefault().getPluginId(script);
             if (pluginId != null) {
@@ -1108,48 +1104,6 @@ public class SpecificScript extends AbstractScript {
             }
         }
         return res;
-    }
-
-    private File getScriptFileInProject(IProject project, IPath importPath) {
-        File result = null;
-        if (project.exists()) {
-            try {
-                final IJavaProject javaProject = JavaCore.create(project);
-                final IClasspathEntry[] entries = javaProject.getResolvedClasspath(true);
-                for (int i = 0; i < entries.length && result == null; i++) {
-                    final IClasspathEntry entry = entries[i];
-                    if (entry.getEntryKind() == IClasspathEntry.CPE_SOURCE && entry.getPath().segmentCount() > 1) {
-                        final IFile test = ResourcesPlugin.getWorkspace().getRoot().getFile(entry.getPath().append(importPath));
-                        if (test.exists()) {
-                            result = test.getLocation().toFile();
-                        }
-                    }
-                }
-                for (int i = 0; i < entries.length && result == null; i++) {
-                    final IClasspathEntry entry = entries[i];
-                    if (entry.getEntryKind() == IClasspathEntry.CPE_PROJECT && entry.getPath().segmentCount() == 1) {
-                        final IProject entryProject = ResourcesPlugin.getWorkspace().getRoot().getProject(entry.getPath().segment(0));
-                        if (entryProject != null && entryProject.exists()) {
-                            result = getScriptFileInProject(entryProject, importPath);
-                        }
-                    }
-                }
-            } catch (final JavaModelException e) {
-                result = null;
-            }
-            if (result == null) {
-                final String[] requiredPluginIDs = Resources.getRequiredPluginIDs(project);
-                for (int i = 0; i < requiredPluginIDs.length && result == null; i++) {
-                    final IProject bundleProject = ResourcesPlugin.getWorkspace().getRoot().getProject(requiredPluginIDs[i]);
-                    if (bundleProject != null && bundleProject.exists()) {
-                        result = getScriptFileInProject(bundleProject, importPath);
-                    } else if (Platform.getBundle(requiredPluginIDs[i]) != null) {
-                        result = AcceleoModuleProvider.getDefault().getFile(requiredPluginIDs[i], importPath);
-                    }
-                }
-            }
-        }
-        return result;
     }
 
     /**

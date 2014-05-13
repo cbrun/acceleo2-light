@@ -10,7 +10,7 @@
  *    Obeo - initial API and implementation
  */
 
-package fr.obeo.acceleo.tools.classloaders;
+package fr.obeo.acceleo.gen.ide;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -19,7 +19,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.osgi.framework.Bundle;
 
-import fr.obeo.acceleo.tools.resources.Resources;
+import fr.obeo.acceleo.tools.classloaders.AcceleoClassLoader;
 
 /**
  * This is a classloader for a metamodel project.
@@ -61,7 +61,7 @@ public class AcceleoMetaClassLoader extends AcceleoClassLoader {
      */
     private static URL[] resource2URLs(IProject project) {
         try {
-            IFolder binFolder = Resources.getOutputFolder(project);
+            IFolder binFolder = WorkspaceResources.getOutputFolder(project);
             if (binFolder != null) {
                 String location = binFolder.getLocation().toString();
                 if (location.startsWith("/")) { //$NON-NLS-1$

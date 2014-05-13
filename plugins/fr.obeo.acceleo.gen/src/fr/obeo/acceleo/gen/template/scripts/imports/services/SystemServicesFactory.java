@@ -19,8 +19,8 @@ import java.util.List;
 import org.eclipse.emf.ecore.EPackage;
 
 import fr.obeo.acceleo.gen.template.scripts.IScript;
+import fr.obeo.acceleo.gen.template.scripts.JavaIntegration;
 import fr.obeo.acceleo.gen.template.scripts.SpecificScript;
-import fr.obeo.acceleo.gen.template.scripts.imports.EvalJavaService;
 
 /**
  * Factory that imports the system services for the given script.
@@ -36,6 +36,12 @@ public class SystemServicesFactory {
     private EObjectServices eObjectServices;
 
     private List metamodels;
+    
+    protected JavaIntegration javaIntegration; 
+
+    public SystemServicesFactory(JavaIntegration javaIntegration) {
+        this.javaIntegration = javaIntegration;
+    }
 
     /**
      * Adds system imports to the given script.
@@ -47,9 +53,9 @@ public class SystemServicesFactory {
      */
     public void addImports(IScript script, boolean isRoot) {
         if (isRoot) {
-            script.addImport(new EvalJavaService(new StringServices(), false));
+            script.addImport(javaIntegration.newEvalJavaService(new StringServices(), false));
             eObjectServices = new EObjectServices(script);
-            script.addImport(new EvalJavaService(eObjectServices, false));
+            script.addImport(javaIntegration.newEvalJavaService(eObjectServices, false));
             if (metamodels != null) {
                 Iterator it = metamodels.iterator();
                 while (it.hasNext()) {
@@ -57,12 +63,12 @@ public class SystemServicesFactory {
                 }
                 metamodels = null;
             }
-            script.addImport(new EvalJavaService(new XpathServices(), false));
-            script.addImport(new EvalJavaService(new ResourceServices(), false));
-            script.addImport(new EvalJavaService(new ContextServices(), false));
+            script.addImport(javaIntegration.newEvalJavaService(new XpathServices(), false));
+            script.addImport(javaIntegration.newEvalJavaService(new ResourceServices(), false));
+            script.addImport(javaIntegration.newEvalJavaService(new ContextServices(), false));
         }
-        script.addImport(new EvalJavaService(new ENodeServices(script), true));
-        script.addImport(new EvalJavaService(new RequestServices(script), true));
+        script.addImport(javaIntegration.newEvalJavaService(new ENodeServices(script), true));
+        script.addImport(javaIntegration.newEvalJavaService(new RequestServices(script), true));
         if (script instanceof SpecificScript) {
             if (eObjectServices != null) {
                 eObjectServices.addMetamodel(((SpecificScript) script).getMetamodel());
@@ -72,7 +78,7 @@ public class SystemServicesFactory {
                 }
                 metamodels.add(((SpecificScript) script).getMetamodel());
             }
-            script.addImport(new EvalJavaService(new PropertiesServices((SpecificScript) script), true));
+            script.addImport(javaIntegration.newEvalJavaService(new PropertiesServices((SpecificScript) script), true));
             addExternalSystemServices(script); // registre external services as
                                                // system services
         }
@@ -90,7 +96,7 @@ public class SystemServicesFactory {
         final List services = service.getAllExternalServices();
 
         for (int index = 0; index < services.size(); index++) {
-            script.addImport(new EvalJavaService(services.get(index), true));
+            script.addImport(javaIntegration.newEvalJavaService(services.get(index), true));
         }
 
     }
