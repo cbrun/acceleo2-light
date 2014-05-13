@@ -21,6 +21,7 @@ import org.eclipse.emf.ecore.EPackage;
 import fr.obeo.acceleo.gen.template.scripts.IScript;
 import fr.obeo.acceleo.gen.template.scripts.JavaIntegration;
 import fr.obeo.acceleo.gen.template.scripts.SpecificScript;
+import fr.obeo.acceleo.gen.template.scripts.imports.StdJavaIntergation;
 
 /**
  * Factory that imports the system services for the given script.
@@ -39,8 +40,12 @@ public class SystemServicesFactory {
     
     protected JavaIntegration javaIntegration; 
 
-    public SystemServicesFactory(JavaIntegration javaIntegration) {
-        this.javaIntegration = javaIntegration;
+    public SystemServicesFactory() {
+        this.javaIntegration = new StdJavaIntergation();
+    }
+    
+    public void setJavaIntegration(JavaIntegration integration) {
+        this.javaIntegration = integration;
     }
 
     /**

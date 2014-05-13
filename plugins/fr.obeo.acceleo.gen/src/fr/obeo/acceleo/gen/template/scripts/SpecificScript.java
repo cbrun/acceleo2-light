@@ -41,6 +41,7 @@ import org.osgi.framework.Bundle;
 
 import fr.obeo.acceleo.ecore.factories.FactoryException;
 import fr.obeo.acceleo.ecore.tools.ETools;
+import fr.obeo.acceleo.gen.AcceleoEcoreGenPlugin;
 import fr.obeo.acceleo.gen.AcceleoGenMessages;
 import fr.obeo.acceleo.gen.template.Template;
 import fr.obeo.acceleo.gen.template.TemplateConstants;
@@ -144,8 +145,6 @@ public class SpecificScript extends AbstractScript {
      * The context of the script.
      */
     protected ISpecificScriptContext scriptContext = null;
-
-    
 
     /**
      * Constructor.
@@ -727,7 +726,7 @@ public class SpecificScript extends AbstractScript {
                     // Get imports
                     if (file != null) {
                         try {
-                            addImport(javaIntegration.newEvalJavaService(file));
+                            addImport(getJavaIntegration().newEvalJavaService(file));
                         } catch (final JavaServiceNotFoundException e) {
                         }
                     }
@@ -1070,7 +1069,11 @@ public class SpecificScript extends AbstractScript {
      *             if the class designed by value doesn't exists
      */
     protected void addImportForJavaService(final File file, final String value) throws JavaServiceNotFoundException {
-        addImport(javaIntegration.createEvalJavaService(file, value));
+        addImport(getJavaIntegration().createEvalJavaService(file, value));
+    }
+
+    protected JavaIntegration getJavaIntegration() {
+        return AcceleoEcoreGenPlugin.getDefault().getJavaIntegration();
     }
 
     protected File resolveScriptFile(File script, String importValue, String extension) {
@@ -1079,7 +1082,7 @@ public class SpecificScript extends AbstractScript {
         final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(script.getAbsolutePath()));
         if (file != null && file.isAccessible()) {
             final IPath importPath = new Path(importValue.replaceAll("\\.", "/")).addFileExtension(extension); //$NON-NLS-1$ //$NON-NLS-2$
-            res = javaIntegration.getScriptFileInProject(file.getProject(), importPath);
+            res = getJavaIntegration().getScriptFileInProject(file.getProject(), importPath);
         } else {
             final String pluginId = AcceleoModuleProvider.getDefault().getPluginId(script);
             if (pluginId != null) {
@@ -1615,5 +1618,9 @@ public class SpecificScript extends AbstractScript {
      */
     public void setInitProfiling(boolean initProfiling) {
         this.initProfiling = initProfiling;
+    }
+
+    public void setJavaIntegration(JavaIntegration service) {
+        getSystemServicesFactory().setJavaIntegration(service);
     }
 }

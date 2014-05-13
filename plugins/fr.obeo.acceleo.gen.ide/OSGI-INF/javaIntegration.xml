@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="fr.obeo.acceleo.gen.ide">
+   <implementation class="fr.obeo.acceleo.gen.ide.JDTAwareJavaIntegration"/>
+   <service>
+      <provide interface="fr.obeo.acceleo.gen.template.scripts.JavaIntegration"/>
+   </service>
+</scr:component>

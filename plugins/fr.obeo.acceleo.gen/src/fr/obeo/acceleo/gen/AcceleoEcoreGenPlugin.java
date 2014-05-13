@@ -17,6 +17,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 import fr.obeo.acceleo.gen.template.TemplateConstants;
 import fr.obeo.acceleo.gen.template.scripts.ISpecificScriptContext;
@@ -54,6 +55,11 @@ public class AcceleoEcoreGenPlugin extends AcceleoPlugin {
      * The global script context.
      */
     private SpecificScriptContext globalScriptContext;
+    
+    private JavaIntegration jIntegration = new StdJavaIntergation();
+
+    private ServiceReference<?> jIntegrationRef;
+    
 
     private class SpecificScriptContext implements ISpecificScriptContext {
 
@@ -109,6 +115,9 @@ public class AcceleoEcoreGenPlugin extends AcceleoPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         TemplateConstants.initConstants();
+        jIntegrationRef = context.getServiceReference(JavaIntegration.class
+                .getName());
+        jIntegration = (JavaIntegration) context.getService(jIntegrationRef);
     }
 
     /* (non-Javadoc) */
@@ -118,6 +127,10 @@ public class AcceleoEcoreGenPlugin extends AcceleoPlugin {
         AcceleoEcoreGenPlugin.plugin = null;
         resourceBundle = null;
         globalScriptContext = null;
+        if (jIntegrationRef != null) {
+            context.ungetService(jIntegrationRef);
+            jIntegration = new StdJavaIntergation();
+        }
     }
 
     /**
@@ -171,8 +184,13 @@ public class AcceleoEcoreGenPlugin extends AcceleoPlugin {
         return globalScriptContext;
     }
 
+
     public JavaIntegration getJavaIntegration() {
-        return new StdJavaIntergation();
+        return jIntegration;
     }
+
+   
+
+  
 
 }
