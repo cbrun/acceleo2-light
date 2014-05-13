@@ -17,6 +17,5 @@ Export-Package: fr.obeo.acceleo.tools,
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.emf.ecore,
- org.eclipse.emf.ecore.xmi,
- org.eclipse.jdt.core
+ org.eclipse.emf.ecore.xmi
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
